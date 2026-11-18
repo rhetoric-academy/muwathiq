@@ -51,6 +51,9 @@ input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid 
 .list li{margin:0 0 12px;padding-inline-start:2rem;text-indent:-2rem;font:400 17px/1.8 "Noto Naskh Arabic",serif;list-style:none}
 .list{padding:0;margin:0}.list.copying .x{display:none}
 .list .x{all:unset;cursor:pointer;color:var(--danger);font:500 13px "IBM Plex Sans Arabic",sans-serif;margin-inline-start:8px;text-indent:0}
+.fetch{display:flex;gap:8px}.fetch input{flex:1}
+.candb{display:block;width:100%;text-align:start;min-height:44px;margin-top:6px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px;cursor:pointer}
+.sbtn{all:unset;cursor:pointer;color:var(--accent);font-size:13px;margin-top:4px;text-decoration:underline;display:inline-block}.sbtn:focus-visible{outline:3px solid var(--accent)}
 #toast{position:fixed;inset-inline:0;bottom:calc(16px + env(safe-area-inset-bottom,0px));margin:auto;width:max-content;max-width:90%;background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .2s}
 #toast.on{opacity:1}
 @media(prefers-reduced-motion:reduce){#toast{transition:none}}
@@ -63,6 +66,14 @@ input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid 
 </header>
 <main>
 <div class="left">
+<section style="margin-bottom:20px">
+<h2>جلب تلقائي</h2>
+<label class="lbl" for="q">رقم DOI أو ISBN أو رابط يحتوي DOI</label>
+<div class="fetch"><input id="q" dir="ltr" inputmode="url" placeholder="10.1000/xyz123"><button class="btn" id="go" type="button">جلب</button></div>
+<div class="row"><button class="btn alt" id="pdfBtn" type="button">استخراج من ملف PDF</button><input type="file" id="pdf" accept="application/pdf" hidden></div>
+<p class="hint" id="st" role="status">يملأ الحقول فقط، فراجعها قبل الإضافة. يحتاج إلى اتصال بالإنترنت.</p>
+<div id="cand"></div>
+</section>
 <section>
 <h2>الإعدادات</h2>
 <div class="seg" id="ver" role="group" aria-label="إصدار APA"></div>
@@ -120,7 +131,7 @@ en:{nd:'n.d.',etal:'et al.',sep:', ',and:' & ',ret:'Retrieved',from:'from',ed:'e
 function seg(id,items,cur,fn){const el=$(id);el.innerHTML='';items.forEach(([k,t])=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.setAttribute('aria-pressed',k===cur);b.onclick=()=>{fn(k);drawAll()};el.appendChild(b)})}
 function drawSeg(){
 seg('ver',[['7','APA 7'],['6','APA 6']],S.ver,k=>S.ver=k);
-seg('lang',[['ar','مرجع عربي'],['en','مرجع إنجليزي']],S.lang,k=>{S.lang=k;drawAuths()});
+seg('lang',[['ar','مرجع عربي'],['en','مرجع إنجليزي']],S.lang,k=>{S.lang=k;drawAuths();drawFields()});
 seg('type',Object.entries(TYPES),S.type,k=>{S.type=k;drawFields()});
 }
 function drawAuths(){
@@ -135,7 +146,7 @@ FIELDS[S.type].forEach(k=>{const w=document.createElement('div');if(FULL.include
 let inp;
 if(k==='thesisType'){inp=`<select id="f_${k}"><option value="dr">دكتوراه</option><option value="ms">ماجستير</option></select>`}
 else inp=`<input id="f_${k}" dir="auto" ${k==='url'||k==='doi'?'inputmode="url" dir="ltr"':''}>`;
-w.innerHTML=`<label class="lbl" for="f_${k}">${lab(k)}</label>${inp}`;box.appendChild(w);
+w.innerHTML=`<label class="lbl" for="f_${k}">${lab(k)}</label>${inp}`;box.appendChild(w);if(k==='title'&&S.lang==='en'){const sb=document.createElement('button');sb.type='button';sb.className='sbtn';sb.textContent='تحويل إلى حالة الجملة (راجع أسماء الأعلام)';sb.onclick=()=>{const e=$('f_title');e.value=sentence(e.value);S.v.title=e.value;out()};w.appendChild(sb)}
 const el=w.querySelector('#f_'+k);el.value=S.v[k]||(k==='thesisType'?'dr':'');
 el.oninput=el.onchange=()=>{S.v[k]=el.value;out()}});
 out()}
@@ -240,6 +251,84 @@ const doc='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:
 const blob=new Blob(['\ufeff',doc],{type:'application/msword'});
 const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='references.doc';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);toast('تم تصدير الملف')};
 $('clear').onclick=()=>{if(LIST.length&&confirm('مسح كل المراجع من القائمة؟')){LIST=[];save();drawList()}};
+
+const ST=m=>{$('st').textContent=m};
+const DOI_RE=/10\.\d{4,9}\/[^\s"'<>]+/i;
+const cleanDoi=x=>x.replace(/[.,;:)\]}>]+$/,'');
+const txt=h=>new DOMParser().parseFromString(h||'','text/html').body.textContent.replace(/\s+/g,' ').trim();
+const isAr=x=>/[\u0600-\u06FF]/.test(x||'');
+const inits=g=>(g||'').split(/[\s-]+/).filter(Boolean).map(w=>w[0].toUpperCase()+'.').join(' ');
+function ord(n){n=+n;if(!n||n<2)return '';const t=['th','st','nd','rd'],v=n%100;return n+(t[(v-20)%10]||t[v]||t[0])}
+function today(){return new Date().toLocaleDateString(S.lang==='en'?'en-US':'ar-u-nu-latn',{year:'numeric',month:'long',day:'numeric'})}
+function sentence(t){let start=true;return t.split(/(\s+)/).map(w=>{if(!w.trim())return w;const o=start?w:w.replace(/^([A-Z])([a-z]+)([,;]?)$/,(m,a,b,c)=>a.toLowerCase()+b+c);start=/[:?!.]$/.test(w);return o}).join('')}
+function syncOrg(){$('orgBtn').setAttribute('aria-pressed',S.org);$('addAu').hidden=S.org}
+function applyRec(r){S.type=r.type;S.lang=r.lang;S.org=!!r.org;S.auths=r.auths.length?r.auths:[{f:'',g:''}];S.v=r.v;syncOrg();drawSeg();drawAuths();drawFields()}
+function fromCrossref(m){
+const ti=txt((m.title||[])[0]),cont=txt((m['container-title']||[])[0]),arr=m.author||[];
+const ar=isAr(ti+arr.map(a=>(a.family||'')+(a.name||'')).join(''));
+const auths=arr.map(a=>(!a.family&&a.name)?{f:txt(a.name),g:''}:ar?{f:((a.given||'')+' '+(a.family||'')).trim(),g:''}:{f:a.family||'',g:a.given||''});
+const org=arr.length===1&&!arr[0].family&&!!arr[0].name;
+const map={'journal-article':'article',book:'book',monograph:'book','edited-book':'book','reference-book':'book','book-chapter':'chapter','reference-entry':'chapter',report:'report','report-component':'report',dissertation:'thesis'};
+const type=map[m.type]||(cont?'article':'report');
+const dp=((m.issued||m['published-print']||m['published-online']||{})['date-parts']||[[]])[0]||[];
+const v={year:dp[0]?String(dp[0]):'',title:ti,doi:m.DOI||'',publisher:txt(m.publisher),pages:(m.page||'').replace(/\s*[-‐‑‒−]\s*/g,'–'),vol:m.volume||'',issue:m.issue||''};
+if(type==='article')v.source=cont;
+if(type==='chapter'){v.booktitle=cont;const l=(m.editor||[]).map(e=>ar?((e.given||'')+' '+(e.family||'')).trim():(inits(e.given)+' '+(e.family||'')).trim()).filter(Boolean);v.editors=ar?l.join('، '):(l.length>1?l.slice(0,-1).join(', ')+' & '+l.at(-1):(l[0]||''))}
+if(type==='book'&&!ar){const e=ord(m['edition-number']);if(e)v.edition=e}
+if(type==='report'||type==='thesis'){delete v.vol;delete v.issue;delete v.pages}
+return{type,lang:ar?'ar':'en',auths,org,v,raw:m.type}}
+function splitName(n,ar){n=n.trim();if(ar)return{f:n,g:''};if(n.includes(','))return{f:n.split(',')[0].trim(),g:n.split(',').slice(1).join(' ').trim()};const p=n.split(/\s+/);return{f:p.pop(),g:p.join(' ')}}
+function fromBook(b){const ar=isAr(b.title+(b.authors||[]).join(''))||b.lang==='ar';
+return{type:'book',lang:ar?'ar':'en',auths:(b.authors||[]).map(n=>splitName(n,ar)),org:false,v:{year:b.year||'',title:b.title||'',publisher:b.publisher||'',city:b.city||''}}}
+async function byDoi(doi){
+ST('جارٍ الجلب من Crossref…');
+try{const r=await fetch('https://api.crossref.org/works/'+doi.split('/').map(encodeURIComponent).join('/'));
+if(!r.ok){ST(r.status===404?'لم يُعثر على هذا الـ DOI في Crossref.':'تعذّر الجلب (رمز '+r.status+').');return false}
+const j=await r.json();const rec=fromCrossref(j.message);applyRec(rec);
+ST('تم الجلب (نوع المصدر في Crossref: '+rec.raw+'). راجع كل حقل، وتأكد من النوع ومن حالة أحرف العنوان.');return true}
+catch(e){ST('تعذّر الاتصال. تحقق من الإنترنت ثم أعد المحاولة.');return false}}
+async function byIsbn(isbn){
+ST('جارٍ البحث عن الكتاب…');let rec=null;
+try{const j=await(await fetch('https://www.googleapis.com/books/v1/volumes?q=isbn:'+isbn)).json();const b=j.items&&j.items[0]&&j.items[0].volumeInfo;
+if(b)rec=fromBook({title:b.title+(b.subtitle?': '+b.subtitle:''),authors:b.authors||[],publisher:b.publisher,year:(b.publishedDate||'').slice(0,4),lang:b.language})}catch(e){}
+if(!rec){try{const j=await(await fetch('https://openlibrary.org/api/books?bibkeys=ISBN:'+isbn+'&format=json&jscmd=data')).json();const b=j['ISBN:'+isbn];
+if(b)rec=fromBook({title:b.title+(b.subtitle?': '+b.subtitle:''),authors:(b.authors||[]).map(a=>a.name),publisher:(b.publishers||[])[0]&&b.publishers[0].name,year:((b.publish_date||'').match(/\d{4}/)||[''])[0],city:(b.publish_places||[])[0]&&b.publish_places[0].name})}catch(e){}}
+if(!rec){ST('لم أجد هذا الـ ISBN. أدخل بيانات الكتاب يدوياً.');return}
+applyRec(rec);ST('تم الجلب. راجع الاسم والناشر والسنة، وأضف الطبعة إن وجدت.')}
+$('go').onclick=async()=>{const q=$('q').value.trim();if(!q)return;$('cand').innerHTML='';
+const d=q.match(DOI_RE);if(d)return byDoi(cleanDoi(d[0]));
+const isb=q.replace(/[\s-]/g,'');if(/^(97[89]\d{10}|\d{9}[\dXx])$/.test(isb))return byIsbn(isb);
+if(/^https?:\/\//i.test(q)){applyRec({type:'web',lang:S.lang,auths:[],org:false,v:{url:q,accessed:today()}});ST('لا يمكن قراءة بيانات الصفحات العادية من المتصفح، فأُدخل الرابط وتاريخ اليوم فقط. أكمل بقية الحقول.');return}
+ST('لم أتعرّف على المدخل. اكتب DOI أو ISBN أو رابطاً.')};
+$('q').addEventListener('keydown',e=>{if(e.key==='Enter')$('go').click()});
+async function loadPdfJs(){if(window.pdfjsLib)return;
+const base='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
+await new Promise((ok,no)=>{const s=document.createElement('script');s.src=base+'pdf.min.js';s.onload=ok;s.onerror=()=>no(new Error('load'));document.head.appendChild(s)});
+const t=await(await fetch(base+'pdf.worker.min.js')).text();
+pdfjsLib.GlobalWorkerOptions.workerSrc=URL.createObjectURL(new Blob([t],{type:'text/javascript'}))}
+function showCand(items){const c=$('cand');c.innerHTML='';
+items.forEach(it=>{const b=document.createElement('button');b.type='button';b.className='candb';b.dir='ltr';
+const yr=(((it.issued||{})['date-parts']||[[]])[0]||[])[0]||'';
+b.textContent=txt((it.title||[''])[0])+' — '+(it.author||[]).slice(0,2).map(a=>a.family||a.name||'').join(', ')+(yr?' ('+yr+')':'');
+b.onclick=()=>{c.innerHTML='';byDoi(it.DOI)};c.appendChild(b)})}
+$('pdfBtn').onclick=()=>$('pdf').click();
+$('pdf').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;$('cand').innerHTML='';
+ST('جارٍ قراءة الملف…');
+try{await loadPdfJs();
+const doc=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise;
+let text='';for(let i=1;i<=Math.min(doc.numPages,3);i++){const c=await(await doc.getPage(i)).getTextContent();text+=c.items.map(x=>x.str).join(' ')+'\n'}
+const m=text.match(DOI_RE);
+if(m){ST('وُجد DOI داخل الملف، جارٍ الجلب…');if(await byDoi(cleanDoi(m[0])))return}
+let t='';try{t=((await doc.getMetadata()).info||{}).Title||''}catch(x){}
+const sane=t.length>8&&!/microsoft word|\.(docx?|pdf|tex)$|untitled/i.test(t);
+const q=sane?t:text.replace(/\s+/g,' ').slice(0,250);
+if(q.trim().length<8){ST('لا نص قابل للقراءة في الملف (قد يكون ممسوحاً ضوئياً). أدخل البيانات يدوياً.');return}
+ST('لم يُعثر على DOI، جارٍ البحث بعنوان الملف…');
+const j=await(await fetch('https://api.crossref.org/works?rows=4&select=DOI,title,author,issued&query.bibliographic='+encodeURIComponent(q))).json();
+const items=(j.message&&j.message.items)||[];
+if(items.length){showCand(items);ST('اختر المرجع المطابق من القائمة أدناه، وإلا فأدخل البيانات يدوياً.')}
+else{if(sane)applyRec({type:'article',lang:isAr(t)?'ar':'en',auths:[],org:false,v:{title:t}});ST('لم أجد تطابقاً. '+(sane?'وُضع عنوان الملف فقط، أكمل الباقي يدوياً.':'أدخل البيانات يدوياً.'))}}
+catch(err){ST('تعذّرت قراءة الملف أو الاتصال بالخدمة. جرّب ملفاً آخر أو أدخل البيانات يدوياً.')}};
 drawSeg();drawAuths();drawFields();drawList();
 if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})})}
 </script>
