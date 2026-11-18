@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e6b66">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="موثّق">
+<title>موثّق – توثيق APA 6 وAPA 7</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f1f5f4;--surface:#fff;--ink:#10272b;--muted:#566b6e;--line:#c9d6d3;--accent:#0e6b66;--accent-ink:#fff;--soft:#e2efed;--danger:#a3322b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1a1c;--surface:#14282b;--ink:#e6f0ee;--muted:#9bb2b0;--line:#2b4448;--accent:#5fc7bd;--accent-ink:#06201e;--soft:#1b3a3c;--danger:#f0877f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d1a1c;--surface:#14282b;--ink:#e6f0ee;--muted:#9bb2b0;--line:#2b4448;--accent:#5fc7bd;--accent-ink:#06201e;--soft:#1b3a3c;--danger:#f0877f;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.6 "IBM Plex Sans Arabic",system-ui,sans-serif}
+header{padding:28px 20px 8px;max-width:1080px;margin:auto}
+h1{font-size:clamp(28px,5vw,40px);margin:0 0 4px;font-weight:600;letter-spacing:0}
+header p{margin:0;color:var(--muted);max-width:60ch}
+main{max-width:1080px;margin:auto;padding:16px 20px 48px;display:grid;gap:20px}
+@media(min-width:900px){main{grid-template-columns:1fr 1fr;align-items:start}.right{position:sticky;top:16px}}
+section{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+h2{font-size:17px;margin:0 0 12px;font-weight:600}
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.seg button{flex:1 1 auto;min-height:44px;padding:8px 14px;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:8px;font:inherit;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.lbl{display:block;font-size:14px;color:var(--muted);margin:0 0 2px}
+input,select{width:100%;min-height:44px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}
+.full{grid-column:1/-1}
+.au{display:grid;grid-template-columns:1fr 1fr 44px;gap:8px;margin-bottom:8px}
+.au.one{grid-template-columns:1fr 44px}.au button{min-height:44px;border:1px solid var(--line);background:transparent;color:var(--danger);border-radius:8px;font-size:20px;cursor:pointer}
+.btn{min-height:44px;padding:8px 16px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);font:inherit;font-weight:600;cursor:pointer}
+.btn.alt{background:transparent;color:var(--accent)}.btn.alt[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.sheet{background:var(--surface);border-inline-start:4px solid var(--accent);padding:14px 16px;font:400 18px/1.9 "Noto Naskh Arabic","Times New Roman",serif;overflow-wrap:anywhere;min-height:64px;border-radius:4px;border-block:1px solid var(--line);border-inline-end:1px solid var(--line)}
+.sheet.en{font-family:"Times New Roman",Times,serif;font-size:17px;line-height:1.7}
+.sheet i{font-style:italic}
+.hint{color:var(--muted);font-size:14px;margin:8px 0 0}
+.cite{margin:0 0 10px}
+.cite b{display:block;font-size:14px;color:var(--muted);font-weight:500}
+.cite span{font:400 17px/1.7 "Noto Naskh Arabic",serif}
+.list li{margin:0 0 12px;padding-inline-start:2rem;text-indent:-2rem;font:400 17px/1.8 "Noto Naskh Arabic",serif;list-style:none}
+.list{padding:0;margin:0}.list.copying .x{display:none}
+.list .x{all:unset;cursor:pointer;color:var(--danger);font:500 13px "IBM Plex Sans Arabic",sans-serif;margin-inline-start:8px;text-indent:0}
+#toast{position:fixed;inset-inline:0;bottom:calc(16px + env(safe-area-inset-bottom,0px));margin:auto;width:max-content;max-width:90%;background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.on{opacity:1}
+@media(prefers-reduced-motion:reduce){#toast{transition:none}}
+</style>
+</head>
+<body>
+<header>
+<h1>موثّق</h1>
+<p>أدخل بيانات المصدر فيظهر الاستشهاد وسطر قائمة المراجع فوراً بنمط APA 6 أو APA 7، للمراجع العربية والإنجليزية.</p>
+</header>
+<main>
+<div class="left">
+<section>
+<h2>الإعدادات</h2>
+<div class="seg" id="ver" role="group" aria-label="إصدار APA"></div>
+<div class="seg" id="lang" role="group" aria-label="لغة المرجع"></div>
+<div class="seg" id="type" role="group" aria-label="نوع المصدر"></div>
+</section>
+<section style="margin-top:20px">
+<h2>المؤلفون</h2>
+<div id="auths"></div>
+<div class="row" style="margin-top:0"><button class="btn alt" id="addAu" type="button">إضافة مؤلف</button><button class="btn alt" id="orgBtn" type="button" aria-pressed="false">مؤلف مؤسسي (جهة)</button></div>
+<p class="hint">في المراجع العربية اكتب الاسم الثلاثي بترتيبه الطبيعي دون قلب أو اسم عائلة. في الإنجليزية اكتب اسم العائلة ثم الاسم الأول فيتحول إلى اختصار تلقائياً.</p>
+<h2 style="margin-top:18px">بيانات المصدر</h2>
+<div class="grid" id="fields"></div>
+<p class="hint">اكتب عنوان المقالة بنمط الجملة (حرف كبير في أول كلمة فقط) في المراجع الإنجليزية كما يشترط APA 7.</p>
+</section>
+</div>
+<div class="right">
+<section>
+<h2>مدخل قائمة المراجع</h2>
+<div class="sheet" id="ref" aria-live="polite"></div>
+<h2 style="margin-top:16px">الاستشهاد داخل النص</h2>
+<div id="cites"></div>
+<div class="row">
+<button class="btn" id="copyRef" type="button">نسخ المرجع</button>
+<button class="btn alt" id="add" type="button">إضافة إلى قائمتي</button>
+</div>
+</section>
+<section style="margin-top:20px">
+<h2>قائمة مراجعي (مرتبة أبجدياً)</h2>
+<ol class="list" id="list"></ol>
+<p class="hint" id="empty">القائمة فارغة. أضف مرجعاً من الأعلى.</p>
+<div class="row">
+<button class="btn" id="copyAll" type="button">نسخ القائمة</button>
+<button class="btn alt" id="clear" type="button">مسح القائمة</button>
+</div>
+</section>
+</div>
+</main>
+<div id="toast" role="status"></div>
+<script>
+const S={ver:'7',lang:'ar',type:'article',org:false,auths:[{f:'',g:''}],v:{}};
+let LIST=[];
+try{LIST=JSON.parse(localStorage.getItem('mwthq-list')||'[]')}catch(e){LIST=[]}
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const TYPES={article:'مقالة في مجلة',book:'كتاب',web:'صفحة ويب',thesis:'رسالة جامعية',chapter:'فصل في كتاب',report:'تقرير',pdf:'ملف PDF'};
+const FIELDS={article:['year','title','source','vol','issue','pages','doi','url'],book:['year','title','edition','publisher','city','doi','url'],web:['year','monthday','title','source','url','accessed'],thesis:['year','title','thesisType','publisher','city','url'],chapter:['year','title','editors','booktitle','pages','publisher','city','doi','url'],report:['year','title','repno','publisher','city','url'],pdf:['year','monthday','title','source','url']};
+const LAB={year:'سنة النشر',title:'العنوان',source:'اسم المجلة',vol:'المجلد',issue:'العدد',pages:'الصفحات (مثال: 12-30)',doi:'رقم DOI',url:'الرابط',edition:'الطبعة (اختياري)',publisher:'الناشر',city:'المدينة (لنمط APA 6)',monthday:'الشهر واليوم (اختياري)',accessed:'تاريخ الاطلاع (لنمط APA 6)',thesisType:'نوع الرسالة',editors:'محرر الكتاب (عند التعدد افصل بفاصلة)',booktitle:'عنوان الكتاب',repno:'رقم التقرير (اختياري)'};
+const FULL=['title','url','source','publisher','editors','booktitle'];
+function lab(k){if(k==='source'&&(S.type==='web'||S.type==='pdf'))return 'اسم الموقع أو الجهة';if(k==='publisher'&&S.type==='report')return 'الجهة الناشرة';if(k==='publisher'&&S.type==='thesis')return 'الجامعة';return LAB[k]}
+const W={ar:{nd:'د.ت.',etal:'وآخرون',sep:'، ',and:' و',ret:'تم الاسترجاع',from:'من',ed:'ط.',dr:'رسالة دكتوراه',ms:'رسالة ماجستير'},
+en:{nd:'n.d.',etal:'et al.',sep:', ',and:' & ',ret:'Retrieved',from:'from',ed:'ed.',dr:'Doctoral dissertation',ms:'Master’s thesis'}};
+
+function seg(id,items,cur,fn){const el=$(id);el.innerHTML='';items.forEach(([k,t])=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.setAttribute('aria-pressed',k===cur);b.onclick=()=>{fn(k);drawAll()};el.appendChild(b)})}
+function drawSeg(){
+seg('ver',[['7','APA 7'],['6','APA 6']],S.ver,k=>S.ver=k);
+seg('lang',[['ar','مرجع عربي'],['en','مرجع إنجليزي']],S.lang,k=>{S.lang=k;drawAuths()});
+seg('type',Object.entries(TYPES),S.type,k=>{S.type=k;drawFields()});
+}
+function drawAuths(){
+const box=$('auths');box.innerHTML='';
+S.auths.forEach((a,i)=>{const d=document.createElement('div');d.className='au';
+const two=S.lang==='en'&&!S.org;d.className='au'+(two?'':' one');const ph=S.org?'اسم الجهة':'الاسم الثلاثي، مثال: محمد أحمد علي';d.innerHTML=(two?`<input dir="auto" aria-label="اسم العائلة" placeholder="Family name" value="${esc(a.f)}"><input dir="auto" aria-label="الاسم الأول" placeholder="Given name" value="${esc(a.g||'')}">`:`<input dir="auto" aria-label="${ph}" placeholder="${ph}" value="${esc(a.f)}">`)+`<button type="button" aria-label="حذف المؤلف">×</button>`;
+const f=d.children[0],x=d.lastElementChild;f.oninput=()=>{a.f=f.value;out()};if(two){const g=d.children[1];g.oninput=()=>{a.g=g.value;out()}}
+x.onclick=()=>{if(S.auths.length>1){S.auths.splice(i,1);drawAuths();out()}};box.appendChild(d)})}
+function drawFields(){
+const box=$('fields');box.innerHTML='';
+FIELDS[S.type].forEach(k=>{const w=document.createElement('div');if(FULL.includes(k))w.className='full';
+let inp;
+if(k==='thesisType'){inp=`<select id="f_${k}"><option value="dr">دكتوراه</option><option value="ms">ماجستير</option></select>`}
+else inp=`<input id="f_${k}" dir="auto" ${k==='url'||k==='doi'?'inputmode="url" dir="ltr"':''}>`;
+w.innerHTML=`<label class="lbl" for="f_${k}">${lab(k)}</label>${inp}`;box.appendChild(w);
+const el=w.querySelector('#f_'+k);el.value=S.v[k]||(k==='thesisType'?'dr':'');
+el.oninput=el.onchange=()=>{S.v[k]=el.value;out()}});
+out()}
+function drawAll(){drawSeg();out()}
+
+function nm(a){const f=a.f.trim(),g=a.g.trim();if(S.org)return esc(f);
+if(S.lang==='en'){const ini=g.split(/[\s-]+/).filter(Boolean).map(w=>w[0].toUpperCase()+'.').join(' ');return esc(f)+(ini?', '+ini:'')}
+return esc(f)}
+function joinN(n){const en=S.lang==='en';if(n.length===1)return n[0];
+if(n.length===2)return en?n[0]+', & '+n[1]:n[0]+'، و'+n[1];
+return en?n.slice(0,-1).join(', ')+', & '+n.at(-1):n.slice(0,-1).join('، ')+'، و'+n.at(-1)}
+function authors(){const a=S.auths.filter(x=>x.f.trim());const n=a.map(nm);if(!n.length)return '';
+const lim=S.ver==='7'?20:7;
+if(n.length<=lim)return joinN(n);
+return n.slice(0,lim-1).join(S.lang==='en'?', ':'، ')+(S.lang==='en'?', . . . ':'، . . . ')+n.at(-1)}
+const endP=s=>{s=s.trim();return /[.?!]$|[.?!]<\/i>$/.test(s)?s:s+'.'};
+function clean(s){return s.replace(/\s+/g,' ').replace(/\.\s*\./g,'.').replace(/\s+\./g,'.').trim()}
+function link(){const v=S.v,w=W[S.lang];const doi=(v.doi||'').trim().replace(/^(https?:\/\/(dx\.)?doi\.org\/|doi:\s*)/i,'');const url=(v.url||'').trim();
+if(S.ver==='7')return doi?'https://doi.org/'+esc(doi):esc(url);
+if(doi)return 'doi:'+esc(doi);return url?w.ret+' '+w.from+' '+esc(url):''}
+function build(){
+const v=S.v,w=W[S.lang],t=S.type,ver=S.ver;
+const A=authors();const year=(v.year||'').trim();
+const d=(year||w.nd)+((t==='web'||t==='pdf')&&v.monthday?w.sep+esc(v.monthday):'');
+const T=esc(v.title||'…');const lead=A?endP(A)+' ('+(d.replace(/&amp;/g,'&'))+'). ':'';
+let r='';
+const dateOnly='('+d+'). ';
+const head=(italic)=>A?endP(A)+' '+dateOnly:'';
+const title=(it,extra='')=>it?'<i>'+T+'</i>'+extra:T;
+if(t==='article'){
+const body=endP(T)+' <i>'+esc(v.source||'…')+'</i>'+(v.vol?w.sep+'<i>'+esc(v.vol)+'</i>':'')+(v.issue?'('+esc(v.issue)+')':'')+(v.pages?w.sep+esc(v.pages):'')+'. '+link();
+r=A?head()+body:endP(T)+' '+dateOnly+'<i>'+esc(v.source||'…')+'</i>'+(v.vol?w.sep+'<i>'+esc(v.vol)+'</i>':'')+(v.issue?'('+esc(v.issue)+')':'')+(v.pages?w.sep+esc(v.pages):'')+'. '+link()}
+else if(t==='book'){
+const ed=v.edition?' ('+esc(v.edition)+(S.lang==='en'&&!/ed\./.test(v.edition)?' ed.':'')+')':'';
+const pub=ver==='7'?esc(v.publisher||'…'):(v.city?esc(v.city)+': ':'')+esc(v.publisher||'…');
+r=(A?head():'<i>'+T+'</i>'+ed+'. '+dateOnly)+(A?'<i>'+T+'</i>'+ed+'. ':'')+endP(pub)+' '+link()}
+else if(t==='web'){
+if(ver==='7')r=(A?head():'<i>'+T+'</i>. '+dateOnly)+(A?'<i>'+T+'</i>. ':'')+(v.source?endP(esc(v.source))+' ':'')+esc(v.url||'')
+else r=(A?head():T+'. '+dateOnly)+(A?endP(T)+' ':'')+w.ret+(v.accessed?' '+esc(v.accessed):'')+' '+w.from+' '+esc(v.url||'')}
+else if(t==='thesis'){
+const ty=w[(S.v.thesisType||'dr')];const pub=esc(v.publisher||'…');
+if(ver==='7')r=(A?head():'')+'<i>'+T+'</i> ['+ty+', '+pub+']. '+(v.url?esc(v.url):'')
+else r=(A?head():'')+'<i>'+T+'</i> ('+ty+'). '+pub+(v.city?w.sep+esc(v.city):'')+'. '+(v.url?w.ret+' '+w.from+' '+esc(v.url):'')}
+else if(t==='chapter'){
+const ed=esc(v.editors||'…');const multi=/&|،|,|\sو\s/.test(v.editors||'');
+const eds=S.lang==='en'?'In '+ed+(multi?' (Eds.), ':' (Ed.), '):'في '+ed+(multi?' (محررون)، ':' (محرر)، ');
+const pg=v.pages?' ('+(S.lang==='en'?'pp. ':'ص ')+esc(v.pages)+')':'';
+const pub=ver==='7'?esc(v.publisher||'…'):(v.city?esc(v.city)+': ':'')+esc(v.publisher||'…');
+r=(A?head():endP(T)+' '+dateOnly)+(A?endP(T)+' ':'')+eds+'<i>'+esc(v.booktitle||'…')+'</i>'+pg+'. '+endP(pub)+' '+link()}
+else if(t==='report'){
+const rn=v.repno?' ('+(S.lang==='en'?'Report No. ':'تقرير رقم ')+esc(v.repno)+')':'';
+const pb=esc(v.publisher||'');const same=ver==='7'&&A&&pb&&pb===A.replace(/\.$/,'');
+const pub=same?'':(ver==='7'?pb:(v.city?esc(v.city)+': ':'')+pb);
+r=(A?head():'<i>'+T+'</i>'+rn+'. '+dateOnly)+(A?'<i>'+T+'</i>'+rn+'. ':'')+(pub?endP(pub)+' ':'')+link()}
+else{
+const lb=S.lang==='en'?'[PDF file]':'[ملف PDF]';
+const tail=(v.source?endP(esc(v.source))+' ':'')+(ver==='7'?esc(v.url||''):(v.url?w.ret+' '+w.from+' '+esc(v.url):''));
+r=(A?head():'<i>'+T+'</i> '+lb+'. '+dateOnly)+(A?'<i>'+T+'</i> '+lb+'. ':'')+tail}
+return clean(r)}
+function cites(){
+const a=S.auths.filter(x=>x.f.trim()).map(x=>esc(x.f.trim()));const w=W[S.lang];const y=(S.v.year||'').trim()||w.nd;const n=a.length;
+const sep=S.lang==='en'?', ':'، ';
+const amp=S.lang==='en'?' & ':'، و';const andN=S.lang==='en'?' and ':' و';
+let first,rest=null;
+const etal=a[0]+' '+w.etal;
+if(!n){const t=esc((S.v.title||'…').split(/\s+/).slice(0,4).join(' '));return [['بين قوسين','(«'+t+'»'+sep+y+')'],['سردي','«'+t+'» ('+y+')']]}
+if(n===1)first=a[0];
+else if(n===2)first=a.join(amp);
+else if(S.ver==='7'||n>=6)first=etal;
+else{first=a.slice(0,-1).join(sep)+(S.lang==='en'?', & ':'، و')+a.at(-1);rest=etal}
+const f2=n===2?a.join(andN):first;
+const rows=[[rest?'بين قوسين (أول ذكر)':'بين قوسين','('+first+sep+y+')'],[rest?'سردي (أول ذكر)':'سردي',(rest?a.slice(0,-1).join(sep)+andN+a.at(-1):f2)+' ('+y+')']];
+if(rest){rows.push(['بين قوسين (الذكر التالي)','('+rest+sep+y+')']);rows.push(['سردي (الذكر التالي)',rest+' ('+y+')'])}
+return rows}
+function out(){
+const html=build();const el=$('ref');el.innerHTML=html;el.className='sheet'+(S.lang==='en'?' en':'');el.dir=S.lang==='en'?'ltr':'rtl';
+$('cites').innerHTML=cites().map(([l,t])=>`<p class="cite"><b>${l}</b><span dir="${S.lang==='en'?'ltr':'rtl'}">${t}</span></p>`).join('')}
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),1800)}
+function copyNode(n){const r=document.createRange();r.selectNodeContents(n);const s=getSelection();s.removeAllRanges();s.addRange(r);let ok=false;try{ok=document.execCommand('copy')}catch(e){}s.removeAllRanges();toast(ok?'تم النسخ':'تعذّر النسخ، حدّد النص يدوياً')}
+$('copyRef').onclick=()=>copyNode($('ref'));
+$('addAu').onclick=()=>{S.auths.push({f:'',g:''});drawAuths()};
+$('orgBtn').onclick=()=>{S.org=!S.org;if(S.org)S.auths=[S.auths[0]||{f:'',g:''}];$('orgBtn').setAttribute('aria-pressed',S.org);$('addAu').hidden=S.org;drawAuths();out()};
+function save(){try{localStorage.setItem('mwthq-list',JSON.stringify(LIST))}catch(e){}}
+function key(x){return x.k}
+$('add').onclick=()=>{const first=S.auths.find(a=>a.f.trim());const k=first?first.f.trim():(S.v.title||'');LIST.push({k,h:build(),lang:S.lang});save();drawList();toast('أُضيف إلى القائمة')};
+function drawList(){
+LIST.sort((a,b)=>a.k.localeCompare(b.k,'ar'));
+const ol=$('list');ol.innerHTML='';
+LIST.forEach((x,i)=>{const li=document.createElement('li');li.dir=x.lang==='en'?'ltr':'rtl';li.innerHTML=x.h+' <button class="x" type="button">حذف</button>';li.querySelector('.x').onclick=()=>{LIST.splice(i,1);save();drawList()};ol.appendChild(li)});
+$('empty').hidden=LIST.length>0}
+$('copyAll').onclick=()=>{if(!LIST.length)return;const l=$('list');l.classList.add('copying');copyNode(l);l.classList.remove('copying')};
+$('clear').onclick=()=>{if(LIST.length&&confirm('مسح كل المراجع من القائمة؟')){LIST=[];save();drawList()}};
+drawSeg();drawAuths();drawFields();drawList();
+if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})})}
+</script>
+</body>
+</html>
