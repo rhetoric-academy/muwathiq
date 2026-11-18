@@ -96,6 +96,7 @@ input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid 
 <p class="hint" id="empty">القائمة فارغة. أضف مرجعاً من الأعلى.</p>
 <div class="row">
 <button class="btn" id="copyAll" type="button">نسخ القائمة</button>
+<button class="btn" id="expWord" type="button">تصدير إلى Word</button>
 <button class="btn alt" id="clear" type="button">مسح القائمة</button>
 </div>
 </section>
@@ -226,6 +227,18 @@ const ol=$('list');ol.innerHTML='';
 LIST.forEach((x,i)=>{const li=document.createElement('li');li.dir=x.lang==='en'?'ltr':'rtl';li.innerHTML=x.h+' <button class="x" type="button">حذف</button>';li.querySelector('.x').onclick=()=>{LIST.splice(i,1);save();drawList()};ol.appendChild(li)});
 $('empty').hidden=LIST.length>0}
 $('copyAll').onclick=()=>{if(!LIST.length)return;const l=$('list');l.classList.add('copying');copyNode(l);l.classList.remove('copying')};
+$('expWord').onclick=()=>{
+if(!LIST.length){toast('القائمة فارغة، أضف مراجع أولاً');return}
+const allEn=LIST.every(x=>x.lang==='en');
+const ttl=allEn?'<p class="t" dir="ltr" style="direction:ltr">References</p>':'<p class="t" dir="rtl" style="direction:rtl">المراجع</p>';
+const ps=LIST.map(x=>{const rtl=x.lang!=='en';return '<p class="r'+(rtl?'a':'e')+'" dir="'+(rtl?'rtl':'ltr')+'" style="direction:'+(rtl?'rtl':'ltr')+';unicode-bidi:embed">'+x.h+'</p>'}).join('\n');
+const css='@page Section1{size:21cm 29.7cm;margin:2.54cm 2.54cm 2.54cm 2.54cm}div.Section1{page:Section1}'+
+'p{margin:0;font-family:"Times New Roman",serif;mso-bidi-font-family:"Times New Roman";font-size:12pt;mso-bidi-font-size:12pt;line-height:200%}'+
+'p.t{text-align:center;font-weight:bold;mso-bidi-font-weight:bold}'+
+'p.ra{margin-right:.5in;text-indent:-.5in;text-align:right}p.re{margin-left:.5in;text-indent:-.5in;text-align:left}';
+const doc='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>References</title><!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]--><style>'+css+'</style></head><body><div class="Section1">'+ttl+'\n'+ps+'</div></body></html>';
+const blob=new Blob(['\ufeff',doc],{type:'application/msword'});
+const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='references.doc';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);toast('تم تصدير الملف')};
 $('clear').onclick=()=>{if(LIST.length&&confirm('مسح كل المراجع من القائمة؟')){LIST=[];save();drawList()}};
 drawSeg();drawAuths();drawFields();drawList();
 if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})})}

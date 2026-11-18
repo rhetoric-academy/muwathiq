@@ -1,4 +1,4 @@
-const CACHE = 'muwathiq-v1';
+const CACHE = 'muwathiq-v2';
 const SHELL = ['./', './index.html', './manifest.json', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', e => {
